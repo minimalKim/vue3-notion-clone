@@ -3,8 +3,8 @@
 </template>
 
 <style lang="scss" scoped>
+  $color: orange;
 h1 {
-  $color: yellow;
   color: $color;
 }
 </style>

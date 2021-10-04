@@ -19,6 +19,11 @@ module.exports = {
   module: {
     rules: [
       {
+        test: /\.js$/,
+        exclude: /node_modules\/(?!axios)/,
+        use: 'babel-loader',
+      },
+      {
         test: /\.vue$/,
         use: 'vue-loader',
       },

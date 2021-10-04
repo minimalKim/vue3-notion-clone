@@ -29,7 +29,12 @@ module.exports = {
       },
       {
         test: /\.s?css$/,
-        use: ['vue-style-loader', 'css-loader', 'sass-loader'], // 먼저 실행이 되어야 하는 loader가 나중에 작성되어야 함! (순서중요)
+        use: [
+          'vue-style-loader',
+          'css-loader',
+          'postcss-loader',
+          'sass-loader',
+        ], // 먼저 실행이 되어야 하는 loader가 나중에 작성되어야 함! (순서중요)
       },
     ],
   },

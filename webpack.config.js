@@ -13,6 +13,7 @@ module.exports = {
   entry: './src/main.js', // webpack은 기본적으로 js파일만 해석, vue같은 다른 확장자 파일은 loader이 필요
   output: {
     path: path.resolve(__dirname, 'dist'),
+    publicPath: '/',
     clean: true, // dist내부 불필요한 파일 제거
   },
   module: {
@@ -39,6 +40,7 @@ module.exports = {
     }),
   ],
   devServer: {
-    port: 1234,
+    // port: 1234,
+    historyApiFallback: true,
   },
 };

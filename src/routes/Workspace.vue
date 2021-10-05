@@ -1,5 +1,6 @@
 <template>
-  <section>
+  <section :key="$route.params.id">
+    <!--빈문서들을 교대로 불러올 때 최적화로 인해 일어나는 (동일시하는) 버그 fix-->
     <div class="inner">
       <div
         ref="title"

@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import Home from './Home';
+import Workspace from './Workspace';
 
 export default createRouter({
   history: createWebHistory(),
@@ -7,7 +7,14 @@ export default createRouter({
   routes: [
     {
       path: '/',
-      component: Home,
+      component: Workspace,
+      children: [
+        {
+          name: 'Workspace',
+          path: 'workspaces/:id',
+          component: Workspace,
+        },
+      ],
     },
   ],
 });

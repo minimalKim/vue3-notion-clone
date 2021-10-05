@@ -11,6 +11,7 @@ export default {
       Object.keys(payload).forEach((key) => {
         state[key] = payload[key]; // 단순히 할당
       });
+      console.log(state);
     },
   },
   actions: {
@@ -45,7 +46,35 @@ export default {
         workspaces,
       });
     },
-    updateWorkspace() {},
+
+    async readWorkspace({ commit }, payload) {
+      const { id } = payload;
+      const workspace = await fetch(`https://kdt.roto.codes/documents/${id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-username': 'leon',
+        },
+      }).then((res) => res.json());
+      commit('assignState', {
+        currentWorkspace: workspace,
+      });
+    },
+
+    async updateWorkspace(context, payload) {
+      const { id, title, content } = payload;
+      await fetch(`https://kdt.roto.codes/documents/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-username': 'leon',
+        },
+        body: JSON.stringify({
+          title,
+          content,
+        }),
+      }).then((res) => res.json());
+    },
 
     async deleteWorkspace({ dispatch }, payload) {
       const { id } = payload;

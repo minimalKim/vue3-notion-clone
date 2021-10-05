@@ -61,7 +61,7 @@ export default {
       });
     },
 
-    async updateWorkspace(context, payload) {
+    async updateWorkspace({ dispatch }, payload) {
       const { id, title, content } = payload;
       await fetch(`https://kdt.roto.codes/documents/${id}`, {
         method: 'PUT',
@@ -74,6 +74,7 @@ export default {
           content,
         }),
       }).then((res) => res.json());
+      dispatch('readWorkspaces');
     },
 
     async deleteWorkspace({ dispatch }, payload) {

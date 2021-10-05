@@ -5,6 +5,8 @@ export default {
   state() {
     return {
       workspaces: [],
+      currentWorkspace: {},
+      currentWorkspacePath: [],
     };
   },
   getters: {},
@@ -13,24 +15,20 @@ export default {
       Object.keys(payload).forEach((key) => {
         state[key] = payload[key]; // 단순히 할당
       });
-      console.log(state);
     },
   },
   actions: {
     async createWorkspace({ dispatch }, payload = {}) {
       // root 에 생성시 payload값이 undefined이므로 default값을 {}로 설정
       const { parentId } = payload;
-      const workspace = await fetch('https://kdt.roto.codes/documents/', {
+      const workspace = await _request({
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-username': 'leon',
-        },
         body: JSON.stringify({
           title: '',
           parent: parentId, // 없으면 undefined로 포함이 안됨!
         }),
-      }).then((res) => res.json());
+      });
+      console.log(workspace);
       await dispatch('readWorkspaces');
       // 생성 후 해당 문서로 이동
       router.push({
@@ -42,18 +40,16 @@ export default {
     },
 
     async readWorkspaces({ commit, dispatch }) {
-      const workspaces = await fetch('https://kdt.roto.codes/documents/', {
+      const workspaces = await _request({
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-username': 'leon',
-        },
-      }).then((res) => res.json());
+      });
 
       commit('assignState', {
         // workspaces: workspaces,
         workspaces,
       });
+      dispatch('findWorkspacePath');
+
       // 최소 하나의 workspace는 남겨두기
       if (!workspaces.length) {
         dispatch('createWorkspace');
@@ -63,16 +59,10 @@ export default {
     async readWorkspace({ commit }, payload) {
       const { id } = payload;
       try {
-        const workspace = await fetch(
-          `https://kdt.roto.codes/documents/${id}`,
-          {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              'x-username': 'leon',
-            },
-          }
-        ).then((res) => res.json());
+        const workspace = await _request({
+          id,
+          method: 'GET',
+        });
         commit('assignState', {
           currentWorkspace: workspace,
         });
@@ -83,29 +73,23 @@ export default {
 
     async updateWorkspace({ dispatch }, payload) {
       const { id, title, content } = payload;
-      await fetch(`https://kdt.roto.codes/documents/${id}`, {
+      await _request({
+        id,
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-username': 'leon',
-        },
         body: JSON.stringify({
           title,
           content,
         }),
-      }).then((res) => res.json());
+      });
       dispatch('readWorkspaces');
     },
 
     async deleteWorkspace({ dispatch, state }, payload) {
       const { id } = payload;
-      await fetch(`https://kdt.roto.codes/documents/${id}`, {
+      await _request({
+        id,
         method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-username': 'leon',
-        },
-      }).then((res) => res.json());
+      });
       await dispatch('readWorkspaces');
       // 현재 보고있는 workspace 삭제 시 첫번째 문서로 이동
       if (id === parseInt(router.currentRoute.value.params.id, 10)) {
@@ -116,6 +100,26 @@ export default {
           },
         });
       }
+    },
+
+    findWorkspacePath({ state, commit }) {
+      const currentWorkspaceId = parseInt(
+        router.currentRoute.value.params.id,
+        10
+      );
+      function _find(workspace, parents) {
+        if (currentWorkspaceId === workspace.id) {
+          commit('assignState', {
+            currentWorkspacePath: [...parents, workspace],
+          });
+        }
+        if (workspace.documents) {
+          workspace.documents.forEach((ws) =>
+            _find(ws, [...parents, workspace])
+          );
+        }
+      }
+      state.workspaces.forEach((workspace) => _find(workspace, []));
     },
   },
 };

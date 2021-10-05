@@ -35,8 +35,14 @@ export default {
       return this.$store.state.workspace.workspaces;
     }
   },
-  created() {
-    this.$store.dispatch('workspace/readWorkspaces');
+  created() { // 라이프사이클 비동기 미지원
+    this.workspacesInit();
+  },
+  methods: {
+    async workspacesInit() {
+      await this.$store.dispatch('workspace/readWorkspaces');
+      console.log(this.$store.state.workspace.currentWorkspacePath);
+    }
   }
 };
 </script>

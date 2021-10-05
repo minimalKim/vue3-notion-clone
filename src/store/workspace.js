@@ -41,7 +41,7 @@ export default {
       });
     },
 
-    async readWorkspaces({ commit }) {
+    async readWorkspaces({ commit, dispatch }) {
       const workspaces = await fetch('https://kdt.roto.codes/documents/', {
         method: 'GET',
         headers: {
@@ -54,20 +54,31 @@ export default {
         // workspaces: workspaces,
         workspaces,
       });
+      // 최소 하나의 workspace는 남겨두기
+      if (!workspaces.length) {
+        dispatch('createWorkspace');
+      }
     },
 
     async readWorkspace({ commit }, payload) {
       const { id } = payload;
-      const workspace = await fetch(`https://kdt.roto.codes/documents/${id}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-username': 'leon',
-        },
-      }).then((res) => res.json());
-      commit('assignState', {
-        currentWorkspace: workspace,
-      });
+      try {
+        const workspace = await fetch(
+          `https://kdt.roto.codes/documents/${id}`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'x-username': 'leon',
+            },
+          }
+        ).then((res) => res.json());
+        commit('assignState', {
+          currentWorkspace: workspace,
+        });
+      } catch (error) {
+        router.push('/error');
+      }
     },
 
     async updateWorkspace({ dispatch }, payload) {
@@ -108,3 +119,14 @@ export default {
     },
   },
 };
+
+async function _request(options) {
+  const { id = '' } = options;
+  return await fetch(`https://kdt.roto.codes/documents/${id}`, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      'x-username': 'leon',
+    },
+  }).then((res) => res.json());
+}

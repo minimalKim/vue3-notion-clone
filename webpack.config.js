@@ -20,7 +20,8 @@ module.exports = {
     rules: [
       {
         test: /\.js$/,
-        exclude: /node_modules\/(?!axios)/,
+        exclude: /node_modules/,
+        // exclude: /node_modules\/(?!axios)/,
         use: 'babel-loader',
       },
       {
@@ -33,7 +34,21 @@ module.exports = {
           'vue-style-loader',
           'css-loader',
           'postcss-loader',
-          'sass-loader',
+          {
+            loader: 'sass-loader',
+            options: {
+              additionalData: `
+                @use "sass:color";
+                @use "sass:list";
+                @use "sass:map";
+                @use "sass:math";
+                @use "sass:meta";
+                @use "sass:selector";
+                @use "sass:string";
+                @import "~/scss/_variables";
+              `,
+            },
+          },
         ], // 먼저 실행이 되어야 하는 loader가 나중에 작성되어야 함! (순서중요)
       },
     ],

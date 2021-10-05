@@ -86,7 +86,7 @@ export default {
       dispatch('readWorkspaces');
     },
 
-    async deleteWorkspace({ dispatch }, payload) {
+    async deleteWorkspace({ dispatch, state }, payload) {
       const { id } = payload;
       await fetch(`https://kdt.roto.codes/documents/${id}`, {
         method: 'DELETE',
@@ -96,6 +96,15 @@ export default {
         },
       }).then((res) => res.json());
       await dispatch('readWorkspaces');
+      // 현재 보고있는 workspace 삭제 시 첫번째 문서로 이동
+      if (id === parseInt(router.currentRoute.value.params.id, 10)) {
+        router.push({
+          name: 'Workspace',
+          params: {
+            id: state.workspaces[0].id,
+          },
+        });
+      }
     },
   },
 };

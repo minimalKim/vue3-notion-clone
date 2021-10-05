@@ -81,6 +81,7 @@ export default {
       this.$store.dispatch('workspace/deleteWorkspace', { 
         id: this.workspace.id
       });
+      
     },
   }
 };

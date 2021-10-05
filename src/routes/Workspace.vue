@@ -25,15 +25,20 @@
 export default {
   computed: {
     title() {
-      console.log(this.$store.state.workspace.currentWorkspace.title);
       return this.$store.state.workspace.currentWorkspace.title;
     },
     content() {
-      console.log(this.$store.state.workspace.currentWorkspace.content);
       return this.$store.state.workspace.currentWorkspace.content;
     }
   },
-  created() {
+  watch: {
+    $route() {
+      this.$store.dispatch('workspace/readWorkspace', {
+      id: this.$route.params.id
+    });
+    }
+  },
+  created() { // 생성된 직후
     this.$store.dispatch('workspace/readWorkspace', {
       id: this.$route.params.id
     });

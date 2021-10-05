@@ -1,3 +1,5 @@
+import router from '~/routes';
+
 export default {
   namespaced: true,
   state() {
@@ -18,7 +20,7 @@ export default {
     async createWorkspace({ dispatch }, payload = {}) {
       // root 에 생성시 payload값이 undefined이므로 default값을 {}로 설정
       const { parentId } = payload;
-      await fetch('https://kdt.roto.codes/documents/', {
+      const workspace = await fetch('https://kdt.roto.codes/documents/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -30,6 +32,13 @@ export default {
         }),
       }).then((res) => res.json());
       await dispatch('readWorkspaces');
+      // 생성 후 해당 문서로 이동
+      router.push({
+        name: 'Workspace',
+        params: {
+          id: workspace.id,
+        },
+      });
     },
 
     async readWorkspaces({ commit }) {
